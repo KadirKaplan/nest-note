@@ -3,16 +3,16 @@ import { response } from 'express';
 import { CreateCategoryDto } from 'src/dto/student/category/create-category.dto';
 import { UpdateCategoryDto } from 'src/dto/student/category/update-category.dto';
 import { CategoryService } from 'src/service/student/category/category.service';
+import { NoteService } from 'src/service/student/note/note.service';
 
 @Controller('category')
 export class CategoryController {
-    constructor(private readonly categoryService: CategoryService) { }
+    constructor(private readonly categoryService: CategoryService, private readonly noteService : NoteService) { }
 
     @Post()
     async createCategory(@Res() response, @Body() createCategoryDto: CreateCategoryDto) {
         try {
             const newCategory = await this.categoryService.createCategory(createCategoryDto);
-            ;
             return response.status(HttpStatus.CREATED).redirect('/category');
         } catch(error) {
             return response.status(HttpStatus.BAD_REQUEST).json({
@@ -29,12 +29,13 @@ export class CategoryController {
     async getAllCategories(@Res() response) {
         try {
             const categories  = await this.categoryService.getAllCategories();
+            const notes = await this.noteService.getAllNotes();
             // return response.status(HttpStatus.OK).json({
             //     message : 'Bütün veriler getirildi !',
             //     categories
             // });
             return response.status(HttpStatus.OK).render('category', {
-                categories
+                categories,notes
 
             });
         } catch(error) {

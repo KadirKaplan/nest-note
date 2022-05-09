@@ -4,11 +4,13 @@ import { UpdateCategoryDto } from 'src/dto/student/category/update-category.dto'
 import { ICategory } from 'src/interface/category.interface';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { NoteService } from '../note/note.service';
+import { INote } from 'src/interface/note.interface';
 
 @Injectable()
 export class CategoryService {
 
-    constructor(@InjectModel('Category') private categoryModel: Model<ICategory>) { }
+    constructor(@InjectModel('Category') private categoryModel: Model<ICategory>,@InjectModel('Note') private noteModel : Model<INote>) { }
 
     //create category
     async createCategory(createCategoryDto: CreateCategoryDto): Promise<ICategory> {
@@ -18,13 +20,25 @@ export class CategoryService {
     }
 
     //get all category
-    async getAllCategories(): Promise<ICategory[]> {
+    async getAllCategories(): Promise<ICategory[]>  {
         const categories = await this.categoryModel.find();
+       
         if (!categories || categories.length == 0) {
             throw new NotFoundException('Kategori bulunamadı!');
         }
         return categories;
     }
+
+    //get all notes
+    async getAllNotes(): Promise<INote[]>  {
+        const notes = await this.noteModel.find();
+       
+        if (!notes || notes.length == 0) {
+            throw new NotFoundException('Not bulunamadı!');
+        }
+        return notes;
+    }
+    
 
     //get one category 
     async getOneCategory(categoryid: string): Promise<ICategory> {
